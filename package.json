@@ -1,0 +1,19 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "A RESTful API for a job platform.",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vldmr1337/Workzen.git"
+  },
+  "author": "Valdemar Dias",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vldmr1337/Workzen/issues"
+  },
+  "homepage": "https://github.com/vldmr1337/Workzen#readme"
+}
