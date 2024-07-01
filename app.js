@@ -17,6 +17,10 @@ app.use('/v1/login', loginRoute);
 app.use('/v1/register', registerRoute);
 app.use('/v1/', protectedRoutes);
 
+app.get('/', (req, res) => {
+  res.json({ message: 'API online' });
+});
+
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Rota não encontrada' });
 });

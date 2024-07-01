@@ -6,9 +6,8 @@ const secret = process.env.JWT_SECRET;
 
 exports.register = async (req, res) => {
   try {
-    const { nome, email, senha, telefone, localizacao } = req.body;
-
-    if (!nome || !email || !senha || !telefone || !localizacao) {
+    const { firstName, lastName, email, password } = req.body;
+    if (!firstName || !lastName || !email || !password) {
       return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
     }
 
@@ -18,14 +17,13 @@ exports.register = async (req, res) => {
     }
 
     const salt = await bcrypt.genSalt(10);
-    const hashedSenha = await bcrypt.hash(senha, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     const usuario = new User({
-      nome,
-      email,
-      senha: hashedSenha,
-      telefone,
-      localizacao
+      firstName,
+      lastName,
+      password: hashedPassword,
+      email
     });
 
     await usuario.save();
@@ -38,14 +36,18 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, senha } = req.body;
+    const { email, password } = req.body;
 
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'Credenciais inválidas' });
     }
 
-    const isMatch = await bcrypt.compare(senha, user.senha);
+    if (!user.password) {
+      return res.status(400).json({ message: 'Credenciais inválidas' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Credenciais inválidas' });
     }
@@ -57,4 +59,3 @@ exports.login = async (req, res) => {
     res.status(400).json({ message: 'Erro ao logar', error });
   }
 };
-
