@@ -1,4 +1,5 @@
 const Usuario = require('../models/Usuario');
+const bcrypt = require('bcrypt');
 
 exports.getProfile = async(req, res) => {
     try {
@@ -13,14 +14,33 @@ exports.getProfile = async(req, res) => {
       }
 
 };
+exports.deleteProfile = async (req, res) => {
+  try {
+    const usuario = await Usuario.findByIdAndDelete(req.user.id);
+    if (!usuario) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+    res.status(200).json({ message: `Usuário ${req.user.id } deletado com sucesso` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao deletar usuário', error });
+  }
+};
 
 exports.updateProfile = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
-    
+
+    const updateData = { firstName, lastName, email };
+
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(password, salt);
+    }
+
     const usuarioAtualizado = await Usuario.findByIdAndUpdate(
       req.user.id,
-      { firstName, lastName, email, password },
+      updateData,
       { new: true, runValidators: true }
     );
 
@@ -28,7 +48,7 @@ exports.updateProfile = async (req, res) => {
       return res.status(404).json({ message: 'Usuário não encontrado' });
     }
 
-    const { senha, ...usuarioSemSenha } = usuarioAtualizado.toObject();
+    const { password: senha, ...usuarioSemSenha } = usuarioAtualizado.toObject();
     res.status(200).json(usuarioSemSenha);
   } catch (error) {
     console.error(error);

@@ -20,6 +20,10 @@ const UsuarioSchema = new mongoose.Schema({
   },
   image: {
     type:String
+  },
+  isVerified: {
+    type:Boolean,
+    default:false,
   }
 });
 
