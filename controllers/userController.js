@@ -29,9 +29,16 @@ exports.deleteProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
-
-    const updateData = { firstName, lastName, email };
+    const { firstName, lastName, email, password} = req.body;
+    let imagemBase64 = '';
+    if (req.file) {
+      imagemBase64 = req.file.buffer.toString('base64');
+    }
+    const updateData = { 
+      firstName, 
+      lastName,
+      email,
+      image: imagemBase64 };
 
     if (password) {
       const salt = await bcrypt.genSalt(10);
@@ -55,3 +62,5 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ message: 'Erro ao atualizar perfil', error });
   }
 };
+
+
