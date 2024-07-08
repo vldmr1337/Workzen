@@ -33,7 +33,9 @@ exports.register = async (req, res) => {
     });
 
     await usuario.save();
-    res.status(201).json(usuario);
+    const token = jwt.sign({ id: usuario._id }, secret, { expiresIn: '1h' });
+
+    res.status(201).json({usuario, token});
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: 'Erro ao criar usuário', error });
