@@ -19,7 +19,7 @@ const EmpresaSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  localizacao: {
+  nome: {
     type: String,
     required: true
   }

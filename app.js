@@ -13,8 +13,8 @@ connectDB();
 
 app.use(express.json());
 
-app.use('/v1/login', loginRoute);
-app.use('/v1/register', registerRoute);
+app.use('/v1/', loginRoute);
+app.use('/v1/', registerRoute);
 app.use('/v1/', protectedRoutes);
 
 app.get('/', (req, res) => {
