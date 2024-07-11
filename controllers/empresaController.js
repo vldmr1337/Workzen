@@ -15,7 +15,9 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: "Credenciais inválidas." });
     }
-    const token = jwt.sign({ id: empresa._id }, secret, { expiresIn: "1h" });
+    const token = jwt.sign({ id: empresa._id, userType: "empresa" }, secret, {
+      expiresIn: "1h",
+    });
     res.status(200).json({ token });
   } catch (error) {
     console.error(error);
@@ -54,7 +56,9 @@ exports.register = async (req, res) => {
     });
 
     await empresa.save();
-    const token = jwt.sign({ id: empresa._id }, secret, { expiresIn: "1h" });
+    const token = jwt.sign({ id: empresa._id, userType: "empresa" }, secret, {
+      expiresIn: "1h",
+    });
 
     res.status(201).json({ empresa, token });
   } catch (error) {
@@ -65,14 +69,14 @@ exports.register = async (req, res) => {
 
 exports.getProfile = async (req, res) => {
   try {
-    const empresa = await Empresa.findById(req.user.id).select('-password');
+    const empresa = await Empresa.findById(req.user.id).select("-password");
     if (!empresa) {
-      return res.status(404).json({ message: 'Empresa não encontrada' });
+      return res.status(404).json({ message: "Empresa não encontrada" });
     }
     res.status(200).json(empresa);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Erro ao obter dados da empresa' });
+    res.status(500).json({ message: "Erro ao obter dados da empresa" });
   }
 };
 
@@ -90,15 +94,15 @@ exports.updateProfile = async (req, res) => {
       req.user.id,
       updateData,
       { new: true, runValidators: true }
-    ).select('-password');
+    ).select("-password");
 
     if (!empresaAtualizada) {
-      return res.status(404).json({ message: 'Empresa não encontrada' });
+      return res.status(404).json({ message: "Empresa não encontrada" });
     }
 
     res.status(200).json(empresaAtualizada);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Erro ao atualizar perfil', error });
+    res.status(500).json({ message: "Erro ao atualizar perfil", error });
   }
 };
