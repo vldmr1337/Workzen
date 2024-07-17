@@ -22,4 +22,4 @@ const ApplicationSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Aplicacao', ApplicationSchema);
+module.exports = mongoose.model('Application', ApplicationSchema);

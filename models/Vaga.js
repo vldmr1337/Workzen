@@ -26,6 +26,10 @@ const VagaSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  tags: {
+    type: [String], // Add this line for tags
+    required: true,
+  },
 });
 
 module.exports = mongoose.model('Job', VagaSchema);

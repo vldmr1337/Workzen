@@ -1,13 +1,15 @@
 const Job = require("../models/Vaga");
+const Application = require('../models/Aplicacoes');
 
 exports.createJob = async (req, res) => {
   try {
-    const { title, description, requirements } = req.body;
+    const { title, description, requirements, tags } = req.body;
     const job = new Job({
       company: req.user.id,
       title,
       description,
       requirements,
+      tags,
     });
 
     await job.save();
@@ -30,17 +32,14 @@ exports.getCompanyJobs = async (req, res) => {
 
 exports.getJobDetails = async (req, res) => {
   try {
-    const job = await Job.findById(req.params.jobId).populate(
-      "company",
-      "name"
-    );
+    const job = await Job.findById(req.params.jobId).populate('applicants', 'firstName lastName email');
     if (!job) {
-      return res.status(404).json({ message: "Vaga não encontrada" });
+      return res.status(404).json({ message: 'Vaga não encontrada' });
     }
-    res.status(200).json({ job });
+    res.status(200).json(job);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Erro ao obter detalhes da vaga", error });
+    res.status(500).json({ message: 'Erro ao buscar detalhes da vaga', error });
   }
 };
 
@@ -103,20 +102,43 @@ exports.getApplicants = async (req, res) => {
 
 exports.applyToJob = async (req, res) => {
   try {
-    const job = await Job.findById(req.params.jobId);
+    const { jobId } = req.params;
+    const userId = req.user.id;
+
+    const job = await Job.findById(jobId);
     if (!job) {
-      return res.status(404).json({ message: "Vaga não encontrada" });
+      return res.status(404).json({ message: 'Vaga não encontrada' });
     }
-    if (!job.applicants.includes(req.user.id)) {
-      job.applicants.push(req.user.id);
-      await job.save();
+
+    const existingApplication = await Application.findOne({ job: jobId, user: userId });
+    if (existingApplication) {
+      return res.status(400).json({ message: 'Usuário já se inscreveu para esta vaga' });
     }
-    if (job.applicants.includes(req.user.id)) {
-      return res.status(400).json({ message: "Usuário já inscrito" });
-    }
-    res.status(200).json({ message: "Inscrição realizada com sucesso" });
+
+    const application = new Application({
+      job: jobId,
+      user: userId,
+    });
+
+    await application.save();
+
+    // Add applicant to the job's applicants array
+    job.applicants.push(userId);
+    await job.save();
+
+    res.status(201).json({ message: 'Inscrição bem-sucedida', application });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Erro ao se inscrever na vaga", error });
+    res.status(500).json({ message: 'Erro ao se inscrever na vaga', error });
+  }
+};
+exports.searchJobsByTag = async (req, res) => {
+  try {
+    const { tag } = req.query;
+    const jobs = await Job.find({ tags: tag }).populate('company', 'nome ramo_atividade');
+    res.status(200).json(jobs);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao buscar vagas por tag', error });
   }
 };
