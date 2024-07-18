@@ -15,7 +15,7 @@ exports.sendVerificationEmail = async (req, res) => {
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    const verificationLink = `http://tcc-react-three.vercel.app/verify-email?token=${token}`;
+    const verificationLink = `http://tcc-react-three.vercel.app/verificar-email/${token}`;
 
     await transporter.sendMail({
       from: `Workzen <${process.env.EMAIL}>`,
@@ -43,7 +43,7 @@ exports.sendPasswordRecoveryEmail = async (req, res) => {
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    const recoveryLink = `http://tcc-react-three.vercel.app/recover-password?token=${token}`;
+    const recoveryLink = `http://tcc-react-three.vercel.app/recuperar-senha/${token}`;
 
     await transporter.sendMail({
       from: `Workzen <${process.env.EMAIL}>`,
