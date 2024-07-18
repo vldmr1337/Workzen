@@ -5,6 +5,7 @@ const loginRoute = require('./routes/loginRoute');
 const registerRoute = require('./routes/registerRoute');
 const protectedRoutes = require('./routes/protectedRoutes');
 const jobRoute = require('./routes/vagasRoutes')
+const mailRoutes = require('./routes/mailRoutes')
 const cors = require('cors');
 
 require('dotenv').config();
@@ -18,6 +19,8 @@ app.use('/v1/', loginRoute);
 app.use('/v1/', registerRoute);
 app.use('/v1/', protectedRoutes);
 app.use('/v1/jobs', jobRoute);
+app.use('/v1/mail', mailRoutes);
+
 
 app.get('/', (req, res) => {
   res.json({ message: 'API online' });
