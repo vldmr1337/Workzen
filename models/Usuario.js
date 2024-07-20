@@ -21,6 +21,12 @@ const UsuarioSchema = new mongoose.Schema({
   image: {
     type:String
   },
+  titulo:{
+    type:String,
+  },
+  bio:{
+    type:String,
+  },
   isVerified: {
     type:Boolean,
     default:false,

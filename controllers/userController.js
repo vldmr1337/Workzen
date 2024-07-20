@@ -29,7 +29,7 @@ exports.deleteProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, titulo, bio } = req.body;
     let imagemBase64;
 
     if (req.file) {
@@ -43,7 +43,9 @@ exports.updateProfile = async (req, res) => {
       firstName,
       lastName,
       email,
-      image: imagemBase64
+      image: imagemBase64,
+      titulo,
+      bio
     };
 
     if (password) {
