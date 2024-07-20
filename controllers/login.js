@@ -2,47 +2,57 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/Usuario");
 require("dotenv").config();
+const { body, validationResult } = require('express-validator');
 const secret = process.env.JWT_SECRET;
 
-exports.register = async (req, res) => {
-  try {
-    const { firstName, lastName, email, password } = req.body;
-    if (!firstName || !lastName || !email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Todos os campos são obrigatórios." });
+exports.register = [
+  // Validações
+  body('firstName').notEmpty().withMessage('O primeiro nome é obrigatório'),
+  body('lastName').notEmpty().withMessage('O sobrenome é obrigatório'),
+  body('email').isEmail().withMessage('Insira um email válido'),
+  body('password').isLength({ min: 6 }).withMessage('A senha deve ter no mínimo 6 caracteres'),
+
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "E-mail já registrado." });
+    try {
+      const { firstName, lastName, email, password } = req.body;
+
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: 'E-mail já registrado.' });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      let imagemBase64 = '';
+      if (req.file) {
+        imagemBase64 = req.file.buffer.toString('base64');
+      }
+
+      const usuario = new User({
+        firstName,
+        lastName,
+        password: hashedPassword,
+        email,
+        image: imagemBase64,
+      });
+
+      await usuario.save();
+      const token = jwt.sign({ id: usuario._id, userType: 'usuario' }, secret, { expiresIn: '1h' });
+
+      res.status(201).json({ usuario, token });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({ message: 'Erro ao criar usuário', error });
     }
+  },
+];
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    let imagemBase64 = "";
-    if (req.file) {
-      imagemBase64 = req.file.buffer.toString("base64");
-    }
-
-    const usuario = new User({
-      firstName,
-      lastName,
-      password: hashedPassword,
-      email,
-      image: imagemBase64,
-    });
-
-    await usuario.save();
-    const token = jwt.sign({ id: usuario._id, userType: 'usuario' }, secret, { expiresIn: "1h" });
-
-    res.status(201).json({ usuario, token });
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ message: "Erro ao criar usuário", error });
-  }
-};
 
 exports.login = async (req, res) => {
   try {
