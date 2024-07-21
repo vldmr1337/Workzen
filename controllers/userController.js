@@ -33,10 +33,11 @@ exports.updateProfile = async (req, res) => {
     let imagemBase64;
 
     if (req.file) {
-      imagemBase64 = req.file.buffer.toString('base64');
+      // Adiciona o prefixo data:image/png;base64, ao base64
+      imagemBase64 = `data:image/png;base64,${req.file.buffer.toString('base64')}`;
     } else {
       const user = await Usuario.findById(req.user.id);
-      imagemBase64 = user.image;
+      imagemBase64 = user.image || ''; // Usa a imagem existente ou uma string vazia
     }
 
     const updateData = {
