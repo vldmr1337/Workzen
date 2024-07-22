@@ -12,7 +12,7 @@ router.get('/google', passport.authenticate('google', {
 router.get('/google/callback', passport.authenticate('google', { session: false }), (req, res) => {
   // Aqui você pode gerar um token JWT e enviá-lo ao cliente
   const token = jwt.sign({ id: req.user._id, userType: 'usuario' }, process.env.JWT_SECRET, { expiresIn: '1h' });
-  res.redirect(`https://tcc-react-three.vercel.app/magic?token=${token}`);
+  res.redirect(`https://tcc-react-three.vercel.app/Magic?token=${token}`);
 });
 
 
