@@ -10,7 +10,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: '/v1/auth/google/callback',
+      callbackURL: 'https://workzen.onrender.com/v1/auth/google/callback',
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
