@@ -31,12 +31,12 @@ exports.updateProfile = async (req, res) => {
   try {
     const { firstName, lastName, email, password, titulo, bio } = req.body;
     let imagemBase64;
-
+    const user = await Usuario.findById(req.user.id);
     if (req.file) {
       // Adiciona o prefixo data:image/png;base64, ao base64
       imagemBase64 = `data:image/png;base64,${req.file.buffer.toString('base64')}`;
     } else {
-      const user = await Usuario.findById(req.user.id);
+      
       imagemBase64 = user.image || ''; // Usa a imagem existente ou uma string vazia
     }
 
@@ -48,6 +48,10 @@ exports.updateProfile = async (req, res) => {
       titulo,
       bio
     };
+    if (user.googleId && email) {
+      // Apenas atualiza o email se o usuário não estiver vinculado ao Google
+      return res.status(400).json({message: 'Já tem login com google.'});
+    }
 
     if (password) {
       const salt = await bcrypt.genSalt(10);
