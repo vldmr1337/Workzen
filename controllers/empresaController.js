@@ -1,4 +1,5 @@
 const Empresa = require("../models/Empresa");
+const Usuario = require("../models/Usuario");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -41,6 +42,10 @@ exports.register = async (req, res) => {
     }
 
     // Verifica se o e-mail já está registrado
+    const existingUser = await Usuario.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email já está em uso por um usuário.' });
+    }
     const existingEmpresa = await Empresa.findOne({ email });
     if (existingEmpresa) {
       return res.status(400).json({ message: "E-mail já registrado." });

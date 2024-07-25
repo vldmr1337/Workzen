@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/Usuario");
+const Empresa = require('../models/Empresa');
 require("dotenv").config();
 const { body, validationResult } = require('express-validator');
 const secret = process.env.JWT_SECRET;
@@ -20,7 +21,10 @@ exports.register = [
 
     try {
       const { firstName, lastName, email, password } = req.body;
-
+      const existingCompany = await Empresa.findOne({ email });
+      if (existingCompany) {
+        return res.status(400).json({ message: 'Email já está em uso por uma empresa.' });
+      }
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({ message: 'E-mail já registrado.' });
