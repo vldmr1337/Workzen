@@ -1,20 +1,43 @@
-const User = require('../models/Usuario');
+const Usuario = require('../models/Usuario');
+const Empresa = require('../models/Empresa');
+const bcrypt = require('bcrypt');
 
 exports.handleGoogleLogin = async (profile) => {
-  let user = await User.findOne({ googleId: profile.id });
+  const { id, emails, displayName, name, photos } = profile;
+  const email = emails[0].value; 
 
-  if (!user) {
-    user = new User({
-      googleId: profile.id,
-      email: profile.emails[0].value,
-      firstName: profile.name.givenName,
-      lastName: profile.name.familyName,
-      image: profile.photos[0].value,
-      isVerified: true,
-    });
+  let user = await Usuario.findOne({ googleId: id });
 
-    await user.save();
+  if (user) {
+    return user;
   }
 
+  user = await Usuario.findOne({ email });
+
+  if (user) {
+    if (!user.googleId) {
+      user.googleId = id; 
+      await user.save(); 
+    }
+    return user;
+  }
+
+  const company = await Empresa.findOne({ email });
+  if (company) {
+    throw new Error('Este email já está registrado como uma empresa.');
+  }
+
+  const { givenName: firstName, familyName: lastName } = name;
+
+  user = new Usuario({
+    firstName,
+    lastName,
+    email,
+    googleId: id,
+    image: photos[0].value,
+    isVerified: true,
+  });
+
+  await user.save();
   return user;
 };
