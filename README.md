@@ -118,7 +118,7 @@ Distribuído sob a licença MIT. Veja `LICENSE` para mais informações.
 
 ## Conecte-se Comigo
 
-Você pode entrar em contato comigo através do [LinkedIn](https://www.linkedin.com/in/valdemar-dias-0424b62a4/) ou por e-mail: netok812@gmail.com
+Você pode entrar em contato comigo por e-mail: netok812@gmail.com
 
 ## Linguagens e Ferramentas
 
