@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const secret = process.env.JWT_SECRET;
-const cnpj = require('@fnando/cnpj');
+const cnpj = require("@fnando/cnpj");
 
 exports.login = async (req, res) => {
   try {
@@ -27,24 +27,27 @@ exports.login = async (req, res) => {
   }
 };
 
-
 exports.register = async (req, res) => {
   try {
     const { email, password, cnpj: cnpjValue, ramo_atividade, nome } = req.body;
 
     if (!email || !password || !cnpjValue || !ramo_atividade || !nome) {
-      return res.status(400).json({ message: "Todos os campos são obrigatórios." });
+      return res
+        .status(400)
+        .json({ message: "Todos os campos são obrigatórios." });
     }
 
     // Verifica se o CNPJ é válido
     if (!cnpj.isValid(cnpjValue)) {
-      return res.status(400).json({ message: 'CNPJ inválido.' });
+      return res.status(400).json({ message: "CNPJ inválido." });
     }
 
     // Verifica se o e-mail já está registrado
     const existingUser = await Usuario.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'Email já está em uso por um usuário.' });
+      return res
+        .status(400)
+        .json({ message: "Email já está em uso por um usuário." });
     }
     const existingEmpresa = await Empresa.findOne({ email });
     if (existingEmpresa) {
@@ -102,7 +105,16 @@ exports.getProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const { email, password, cnpj, ramo_atividade, nome } = req.body;
-    const updateData = { email, cnpj, ramo_atividade, nome };
+    const empresa = await Empresa.findById(req.user.id);
+    let imagemBase64;
+    if (req.file) {
+      imagemBase64 = `data:image/png;base64,${req.file.buffer.toString(
+        "base64"
+      )}`;
+    } else {
+      imagemBase64 = empresa.image || ""; 
+    }
+    const updateData = { email, cnpj, ramo_atividade, nome, image: imagemBase64 };
 
     if (password) {
       const salt = await bcrypt.genSalt(10);
