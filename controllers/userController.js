@@ -1,26 +1,27 @@
 const Usuario = require('../models/Usuario');
 const bcrypt = require('bcrypt');
+const cloudinary = require('../config/cloudinary');
 
-exports.getProfile = async(req, res) => {
-    try {
-        const usuario = await Usuario.findById(req.user.id).select('-password');
-        if (!usuario) {
-          return res.status(404).json({ message: 'Usuário não encontrado' });
-        }
-        res.status(200).json(usuario);
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Erro ao obter dados do usuário' });
-      }
-
+exports.getProfile = async (req, res) => {
+  try {
+    const usuario = await Usuario.findById(req.user.id).select('-password');
+    if (!usuario) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+    res.status(200).json(usuario);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao obter dados do usuário' });
+  }
 };
+
 exports.deleteProfile = async (req, res) => {
   try {
     const usuario = await Usuario.findByIdAndDelete(req.user.id);
     if (!usuario) {
       return res.status(404).json({ message: 'Usuário não encontrado' });
     }
-    res.status(200).json({ message: `Usuário ${req.user.id } deletado com sucesso` });
+    res.status(200).json({ message: `Usuário ${req.user.id} deletado com sucesso` });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erro ao deletar usuário', error });
@@ -30,27 +31,51 @@ exports.deleteProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const { firstName, lastName, email, password, titulo, bio } = req.body;
-    let imagemBase64;
     const user = await Usuario.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    let imageUrl = user.image || ''; // Usa a imagem existente ou uma string vazia
+
     if (req.file) {
-      // Adiciona o prefixo data:image/png;base64, ao base64
-      imagemBase64 = `data:image/png;base64,${req.file.buffer.toString('base64')}`;
-    } else {
-      
-      imagemBase64 = user.image || ''; // Usa a imagem existente ou uma string vazia
+      // Faz upload da imagem para o Cloudinary
+      try {
+        imageUrl = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              resource_type: 'image',
+              folder: 'usuarios'
+            },
+            (error, result) => {
+              if (error) {
+                reject(new Error('Erro ao fazer upload da imagem'));
+              } else {
+                resolve(result.secure_url); // URL segura da imagem
+              }
+            }
+          );
+          stream.end(req.file.buffer); // Passa o buffer da imagem para o stream
+        });
+      } catch (error) {
+        console.error('Erro ao fazer upload da imagem:', error);
+        return res.status(500).json({ message: 'Erro ao fazer upload da imagem', error });
+      }
     }
 
     const updateData = {
       firstName,
       lastName,
       email,
-      image: imagemBase64,
+      image: imageUrl, // Corrigido para usar a URL do Cloudinary
       titulo,
       bio
     };
-    if (user.googleId && email) {
-      // Apenas atualiza o email se o usuário não estiver vinculado ao Google
-      return res.status(400).json({message: 'Já tem login com google.'});
+
+    if (user.googleId) {
+      // Apenas retorna um erro se o usuário estiver vinculado ao Google
+      return res.status(400).json({ message: 'Não é possível atualizar o perfil para usuários vinculados ao Google' });
     }
 
     if (password) {

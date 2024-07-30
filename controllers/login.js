@@ -4,6 +4,8 @@ const User = require("../models/Usuario");
 const Empresa = require('../models/Empresa');
 require("dotenv").config();
 const { body, validationResult } = require('express-validator');
+const cloudinary = require('../config/cloudinary');
+
 const secret = process.env.JWT_SECRET;
 
 exports.register = [
@@ -21,6 +23,8 @@ exports.register = [
 
     try {
       const { firstName, lastName, email, password } = req.body;
+
+      // Verificar se o email já está em uso por uma empresa ou usuário
       const existingCompany = await Empresa.findOne({ email });
       if (existingCompany) {
         return res.status(400).json({ message: 'Email já está em uso por uma empresa.' });
@@ -30,21 +34,45 @@ exports.register = [
         return res.status(400).json({ message: 'E-mail já registrado.' });
       }
 
+      // Criptografar a senha
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
-      let imagemBase64 = '';
+      let imageUrl = '';
       if (req.file) {
-        // Adiciona o prefixo data:image/png;base64, ao base64
-        imagemBase64 = `data:image/png;base64,${req.file.buffer.toString('base64')}`;
+        try {
+          // Faz upload da imagem para o Cloudinary
+          const uploadPromise = new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              {
+                resource_type: 'image',
+                folder: 'usuarios'
+              },
+              (error, result) => {
+                if (error) {
+                  reject(new Error('Erro ao fazer upload da imagem'));
+                } else {
+                  resolve(result.secure_url); // URL segura da imagem
+                }
+              }
+            );
+            stream.end(req.file.buffer); // Passa o buffer da imagem para o stream
+          });
+
+          imageUrl = await uploadPromise; // Aguarda a URL da imagem do Cloudinary
+        } catch (error) {
+          console.error('Erro ao fazer upload da imagem:', error);
+          return res.status(500).json({ message: 'Erro ao fazer upload da imagem', error });
+        }
       }
 
+      // Criar um novo usuário
       const usuario = new User({
         firstName,
         lastName,
         password: hashedPassword,
         email,
-        image: imagemBase64,
+        image: imageUrl, // Use a URL da imagem do Cloudinary
       });
 
       await usuario.save();
@@ -57,8 +85,6 @@ exports.register = [
     }
   },
 ];
-
-
 
 exports.login = async (req, res) => {
   try {

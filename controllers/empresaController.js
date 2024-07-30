@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const secret = process.env.JWT_SECRET;
 const cnpj = require("@fnando/cnpj");
+const cloudinary = require('../config/cloudinary');
 
 exports.login = async (req, res) => {
   try {
@@ -106,15 +107,37 @@ exports.updateProfile = async (req, res) => {
   try {
     const { email, password, cnpj, ramo_atividade, nome } = req.body;
     const empresa = await Empresa.findById(req.user.id);
-    let imagemBase64;
+    let imageUrl = empresa.image || ''; // URL da imagem existente ou uma string vazia
+
     if (req.file) {
-      imagemBase64 = `data:image/png;base64,${req.file.buffer.toString(
-        "base64"
-      )}`;
-    } else {
-      imagemBase64 = empresa.image || ""; 
+      // Faz upload da imagem para o Cloudinary
+      const uploadPromise = new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            resource_type: 'image',
+            folder: 'empresas' // Altere para o nome da pasta desejada no Cloudinary
+          },
+          (error, result) => {
+            if (error) {
+              reject(new Error('Erro ao fazer upload da imagem'));
+            } else {
+              resolve(result.secure_url); // URL segura da imagem
+            }
+          }
+        );
+        stream.end(req.file.buffer); // Passa o buffer da imagem para o stream
+      });
+
+      imageUrl = await uploadPromise; // Aguarda a URL da imagem do Cloudinary
     }
-    const updateData = { email, cnpj, ramo_atividade, nome, image: imagemBase64 };
+
+    const updateData = {
+      email,
+      cnpj,
+      ramo_atividade,
+      nome,
+      image: imageUrl // Corrigido para usar a URL do Cloudinary
+    };
 
     if (password) {
       const salt = await bcrypt.genSalt(10);
@@ -125,15 +148,15 @@ exports.updateProfile = async (req, res) => {
       req.user.id,
       updateData,
       { new: true, runValidators: true }
-    ).select("-password");
+    ).select('-password'); // Remove a senha da resposta
 
     if (!empresaAtualizada) {
-      return res.status(404).json({ message: "Empresa não encontrada" });
+      return res.status(404).json({ message: 'Empresa não encontrada' });
     }
 
     res.status(200).json(empresaAtualizada);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Erro ao atualizar perfil", error });
+    res.status(500).json({ message: 'Erro ao atualizar perfil', error });
   }
 };
