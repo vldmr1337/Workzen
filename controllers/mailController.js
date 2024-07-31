@@ -17,7 +17,8 @@ exports.sendVerificationEmail = async (req, res) => {
       expiresIn: "1h",
     });
 
-    const verificationLink = `http://tcc-react-three.vercel.app/verificar-email/${token}`;
+    const verificationLink = `${process.env.FRONT_END}/verificar-email/${token}`;
+    console.log(verificationLink);
 
     await transporter.sendMail({
       from: `Workzen <${process.env.EMAIL}>`,
