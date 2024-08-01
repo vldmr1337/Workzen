@@ -16,12 +16,13 @@
 
 ## Sobre o Projeto
 
-O **Workzen API** é uma solução completa para o gerenciamento de usuários e uploads de currículos, oferecendo funcionalidades como:
+O **Workzen API** é uma solução completa para o gerenciamento de usuários e criação de vagas, oferecendo funcionalidades como:
 
 - **Registro de Usuários**: Cadastro seguro de novos usuários.
 - **Login**: Autenticação de usuários existentes.
 - **Gerenciamento de Perfis**: Edição e atualização de informações de perfil.
 - **Envio de email**: Verificação de conta a partir de link enviado por email.
+- **Criação de vagas**: Criação de vagas, inscrição e visualização.
 
 A API é desenvolvida usando **Node.js**, **Express**, e **MongoDB**, garantindo escalabilidade e flexibilidade para integrar-se com aplicações frontend modernas.
 
@@ -72,7 +73,10 @@ Antes de instalar o projeto, certifique-se de ter os seguintes softwares instala
     GOOGLE_CLIENT_ID=your_google_client_id
     GOOGLE_CLIENT_SECRET=your_google_secret
     GOOGLE_CALLBACK_URL=your_google_callback_url
-    CLIENT_REDIRECT_URL=your_frontend_link
+    CLIENT_REDIRECT_URL=your_frontend_magic_link
+    CLOUDINARY_CLOUD_NAME=cloudinary_name
+    CLOUDINARY_API_KEY=cloudinary_key
+    CLOUDINARY_API_SECRET=cloudinary_secret
    ```
 
 5. Inicie o servidor:
