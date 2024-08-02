@@ -12,7 +12,6 @@ const passport = require('passport'); // Certifique-se de que o Passport está s
 require('./config/passport'); // Certifique-se de que a configuração do Passport é carregada
 
 
-
 require('dotenv').config();
 app.use(cors());
 
