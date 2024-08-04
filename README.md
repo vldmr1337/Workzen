@@ -16,15 +16,15 @@
 
 ## Sobre o Projeto
 
-O **Workzen API** é uma solução completa para o gerenciamento de usuários e criação de vagas, oferecendo funcionalidades como:
+A **Workzen API** é uma solução completa para o gerenciamento de usuários e criação de vagas, oferecendo funcionalidades como:
 
-- **Registro de Usuários**: Cadastro seguro de novos usuários.
-- **Login**: Autenticação de usuários existentes.
-- **Gerenciamento de Perfis**: Edição e atualização de informações de perfil.
-- **Envio de email**: Verificação de conta a partir de link enviado por email.
+- **Registro de Usuários**: Cadastro seguro de novos usuários(talento e empresa).
+- **Login**: Autenticação de usuários existentes(JWT).
+- **Gerenciamento de Perfis**: Edição e atualização de informações de perfil(talento e empresa).
+- **Envio de email**: Verificação e recuperação de conta a partir de link enviado por email.
 - **Criação de vagas**: Criação de vagas, inscrição e visualização.
 
-A API é desenvolvida usando **Node.js**, **Express**, e **MongoDB**, garantindo escalabilidade e flexibilidade para integrar-se com aplicações frontend modernas.
+A API é desenvolvida usando **Node.js**, **Express**, e **MongoDB**, também utiliza bibliotecas como *Passport.js(Google OAuth2)* e *Multer(armazenamento de arquivos em memória)* garantindo escalabilidade e flexibilidade para integrar-se com aplicações frontend modernas.
 
 ## Começando
 
