@@ -206,3 +206,12 @@ exports.login = async (req, res) => {
   }
 };
 
+exports.getAll = async (req, res) => {
+  try {
+    const users = await Usuario.find({}).select('-password');
+    
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao buscar usuários', error });
+  }
+};
