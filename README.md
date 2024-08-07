@@ -104,7 +104,7 @@ Após a instalação, você pode interagir com a API usando ferramentas como [Po
 
 > **Nota:** Para endpoints protegidos, é necessário enviar um token JWT válido no cabeçalho da requisição.
 
-> **Aviso:** Você pode ler a documentação inteira, com todos os endpoints e métodos [aqui](https://documenter.getpostman.com/view/35401261/2sA3kYhyw9).
+> **Aviso:** Você pode ler a documentação inteira, com todos os endpoints e métodos [aqui](https://asdfg2048.github.io/api-docs/).
 
 ## Contribuição
 
