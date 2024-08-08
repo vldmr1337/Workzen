@@ -1,5 +1,7 @@
 const Job = require("../models/Vaga");
 const Application = require('../models/Aplicacoes');
+const Usuario = require('../models/Usuario');
+const { createNotification } = require('./notificationController');
 
 exports.createJob = async (req, res) => {
   try {
@@ -142,3 +144,36 @@ exports.searchJobsByTag = async (req, res) => {
     res.status(500).json({ message: 'Erro ao buscar vagas por tag', error });
   }
 };
+
+exports.acceptCandidate = async (req, res) => {
+  try {
+    const { jobId, candidateId } = req.params; 
+
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(404).json({ message: 'Vaga não encontrada' });
+    }
+
+    if (job.company.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Acesso negado' });
+    }
+
+    const application = await Application.findOne({ job: jobId, user: candidateId });
+    if (!application) {
+      return res.status(404).json({ message: 'Inscrição não encontrada' });
+    }
+
+    application.status = 'Aceitado'; 
+    await application.save();
+
+    const candidate = await Usuario.findById(candidateId);
+    const message = `Parabéns! Você foi aceito para a vaga ${job.title}.`;
+    await createNotification(candidate._id, message);
+
+    res.status(200).json({ message: 'Candidato aceito com sucesso', application });
+  } catch (error) {
+    console.error('Erro ao aceitar candidato:', error);
+    res.status(500).json({ message: 'Erro ao aceitar candidato', error });
+  }
+};
+
