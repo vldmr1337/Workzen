@@ -17,6 +17,7 @@ const VagaSchema = new mongoose.Schema({
   requirements: {
     type: [String],
     required: true,
+    validate: [arrayLimit, 'O array de requisitos não pode estar vazio'],
   },
   applicants: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -27,9 +28,14 @@ const VagaSchema = new mongoose.Schema({
     default: Date.now,
   },
   tags: {
-    type: [String], // Add this line for tags
+    type: [String],
     required: true,
+    validate: [arrayLimit, 'O array de tags não pode estar vazio'],
   },
 });
+
+function arrayLimit(val) {
+  return val.length > 0;
+}
 
 module.exports = mongoose.model('Job', VagaSchema);
