@@ -105,7 +105,7 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const { email, password, cnpj, ramo_atividade, nome } = req.body;
+    const { email, password, cnpj, ramo_atividade, nome, telefone } = req.body;
     const empresa = await Empresa.findById(req.user.id);
     let imageUrl = empresa.image || ''; // URL da imagem existente ou uma string vazia
 
@@ -136,8 +136,9 @@ exports.updateProfile = async (req, res) => {
       cnpj,
       ramo_atividade,
       nome,
-      image: imageUrl // Corrigido para usar a URL do Cloudinary
-    };
+      image: imageUrl,
+      telefone
+     };
 
     if (password) {
       const salt = await bcrypt.genSalt(10);

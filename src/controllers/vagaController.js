@@ -5,13 +5,14 @@ const { createNotification } = require('./notificationController');
 
 exports.createJob = async (req, res) => {
   try {
-    const { title, description, requirements, tags } = req.body;
+    const { title, description, requirements, tags, salario } = req.body;
     const job = new Job({
       company: req.user.id,
       title,
       description,
       requirements,
       tags,
+      salario,
     });
 
     await job.save();

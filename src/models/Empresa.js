@@ -25,6 +25,9 @@ const EmpresaSchema = new mongoose.Schema({
   },
   image: {
     type: String,
+  },
+  telefone: {
+    type: String,
   }
 });
 

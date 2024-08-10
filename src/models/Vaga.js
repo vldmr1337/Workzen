@@ -32,6 +32,10 @@ const VagaSchema = new mongoose.Schema({
     required: true,
     validate: [arrayLimit, 'O array de tags não pode estar vazio'],
   },
+  salario: {
+    type: String,
+    required: true,
+  }
 });
 
 function arrayLimit(val) {
