@@ -17,5 +17,6 @@ router.put(
   upload.single("image"),
   empresaController.updateProfile
 );
+router.delete("/empresa/profile", auth, empresaController.deleteProfile);
 
 module.exports = router;
