@@ -35,6 +35,10 @@ const VagaSchema = new mongoose.Schema({
   salario: {
     type: String,
     required: true,
+  },
+  localizacao: {
+    type: String,
+    required: true
   }
 });
 

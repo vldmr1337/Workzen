@@ -28,6 +28,9 @@ const EmpresaSchema = new mongoose.Schema({
   },
   telefone: {
     type: String,
+  },
+  review: {
+    type: String,
   }
 });
 
