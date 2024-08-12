@@ -31,6 +31,12 @@ const EmpresaSchema = new mongoose.Schema({
   },
   review: {
     type: String,
+  },
+  about: {
+    type: String,
+  },
+  localizacao: {
+    type: String,
   }
 });
 

@@ -105,7 +105,7 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const { email, password, cnpj, ramo_atividade, nome, telefone } = req.body;
+    const { email, password, cnpj, ramo_atividade, nome, telefone, about, localizacao } = req.body;
     const empresa = await Empresa.findById(req.user.id);
     let imageUrl = empresa.image || ''; // URL da imagem existente ou uma string vazia
 
@@ -137,7 +137,9 @@ exports.updateProfile = async (req, res) => {
       ramo_atividade,
       nome,
       image: imageUrl,
-      telefone
+      telefone,
+      about,
+      localizacao
      };
 
     if (password) {
