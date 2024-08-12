@@ -14,11 +14,6 @@ const VagaSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  requirements: {
-    type: [String],
-    required: true,
-    validate: [arrayLimit, 'O array de requisitos não pode estar vazio'],
-  },
   applicants: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Usuario',
