@@ -155,10 +155,12 @@ exports.acceptCandidate = async (req, res) => {
       return res.status(404).json({ message: 'Vaga não encontrada' });
     }
 
+    // Verifica se o usuário é o dono da vaga
     if (job.company.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Acesso negado' });
     }
 
+    // Encontra a candidatura do candidato
     const application = await Application.findOne({ job: jobId, user: candidateId });
     if (!application) {
       return res.status(404).json({ message: 'Inscrição não encontrada' });
@@ -167,6 +169,12 @@ exports.acceptCandidate = async (req, res) => {
     application.status = 'Aceitado'; 
     await application.save();
 
+    await Application.updateMany(
+      { job: jobId, _id: { $ne: application._id } }, // Exclui a candidatura aceita
+      { status: 'Rejeitado' }
+    );
+
+    // Envia notificação para o candidato aceito
     const candidate = await Usuario.findById(candidateId);
     const message = `Parabéns! Você foi aceito para a vaga ${job.title}.`;
     await createNotification(candidate._id, message);
@@ -177,4 +185,3 @@ exports.acceptCandidate = async (req, res) => {
     res.status(500).json({ message: 'Erro ao aceitar candidato', error });
   }
 };
-

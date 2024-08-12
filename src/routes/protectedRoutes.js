@@ -11,6 +11,7 @@ router.put('/me', authenticate, upload.single('image'), userController.updatePro
 router.delete('/me', authenticate, userController.deleteProfile);
 router.post('/me/xp', authenticate, xpController.createExperience);
 router.get('/me/xp', authenticate, xpController.getExperiences);
+router.get('/me/applications', authenticate, userController.getUserApplications);
 router.get('/get/users/all', authenticate, authorize('empresa'), userController.getAll);
 
 
