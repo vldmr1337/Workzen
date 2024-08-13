@@ -37,7 +37,7 @@ exports.deleteProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, titulo, bio } = req.body;
+    const { firstName, lastName, email, password, titulo, bio, languages } = req.body;
     const user = await Usuario.findById(req.user.id);
 
     if (!user) {
@@ -77,7 +77,8 @@ exports.updateProfile = async (req, res) => {
       email,
       image: imageUrl, // Corrigido para usar a URL do Cloudinary
       titulo,
-      bio
+      bio,
+      languages
     };
 
     if (user.googleId) {

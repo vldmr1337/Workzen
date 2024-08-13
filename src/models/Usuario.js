@@ -22,6 +22,9 @@ const UsuarioSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  languages: {
+    type: [String],
+  },
   image: {
     type:String
   },
