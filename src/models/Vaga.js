@@ -22,6 +22,10 @@ const VagaSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  requirements: {
+      type: [String],
+      validate: [arrayLimit, 'O array de requirements não pode estar vazio'],
+  },
   tags: {
     type: [String],
     required: true,
