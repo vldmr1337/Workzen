@@ -49,10 +49,10 @@ exports.getJobDetails = async (req, res) => {
 
 exports.updateJob = async (req, res) => {
   try {
-    const { title, description, requirements } = req.body;
+    const { title, description, requirements, tags} = req.body;
     const job = await Job.findByIdAndUpdate(
       req.params.jobId,
-      { title, description, requirements },
+      { title, description, requirements, tags },
       { new: true, runValidators: true }
     );
 
