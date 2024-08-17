@@ -28,4 +28,39 @@ exports.getExperiences = async (req, res) => {
   }
 };
 
+exports.updateExperience = async (req, res) => {
+  try {
+    const { title, company, localizacao, dataInicio, dataTermino, description } = req.body;
 
+    const experiencia = await Experiencia.findOneAndUpdate(
+      { _id: req.params.id, usuario: req.user.id }, 
+      { title, company, localizacao, dataInicio, dataTermino, description },
+      { new: true, runValidators: true } 
+    );
+
+    if (!experiencia) {
+      return res.status(404).json({ message: 'Experiência não encontrada' });
+    }
+
+    res.status(200).json(experiencia);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao atualizar experiência', error });
+  }
+};
+
+exports.deleteExperience = async (req, res) => {
+  try {
+    const experiencia = await Experiencia.findOneAndDelete({
+      _id: req.params.id,
+      usuario: req.user.id
+    });
+
+    if (!experiencia) {
+      return res.status(404).json({ message: 'Experiência não encontrada' });
+    }
+
+    res.status(200).json({ message: 'Experiência deletada com sucesso' });
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao deletar experiência', error });
+  }
+};
