@@ -37,7 +37,10 @@ const UsuarioSchema = new mongoose.Schema({
   isVerified: {
     type:Boolean,
     default:false,
-  }
+  },
+  favoritedJobs: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Job' }],
+  },
 });
 
 module.exports = mongoose.model('Usuario', UsuarioSchema);

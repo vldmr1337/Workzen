@@ -37,7 +37,7 @@ exports.deleteProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, titulo, bio, languages } = req.body;
+    const { firstName, lastName, email, password, titulo, bio, languages, favoritedJobs } = req.body;
     const user = await Usuario.findById(req.user.id);
 
     if (!user) {
@@ -78,7 +78,8 @@ exports.updateProfile = async (req, res) => {
       image: imageUrl, // Corrigido para usar a URL do Cloudinary
       titulo,
       bio,
-      languages
+      languages,
+      favoritedJobs
     };
 
     if (user.googleId) {
@@ -108,6 +109,7 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ message: 'Erro ao atualizar perfil', error });
   }
 };
+
 exports.register = [
   // Validações
   body('firstName').notEmpty().withMessage('O primeiro nome é obrigatório'),
