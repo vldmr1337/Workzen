@@ -11,7 +11,7 @@ exports.createJob = async (req, res) => {
       title,
       description,
       tags,
-      salario,
+      salario: salario + " R$",
       localizacao,
       requirements,
     });
