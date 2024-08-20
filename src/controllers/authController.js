@@ -1,6 +1,5 @@
 const Usuario = require('../models/Usuario');
 const Empresa = require('../models/Empresa');
-const bcrypt = require('bcrypt');
 
 exports.handleGoogleLogin = async (profile) => {
   const { id, emails, displayName, name, photos } = profile;
