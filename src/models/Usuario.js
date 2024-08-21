@@ -41,6 +41,14 @@ const UsuarioSchema = new mongoose.Schema({
   favoritedJobs: {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Job' }],
   },
+  isAdmin: {
+    type:Boolean,
+    default:false,
+  }, 
+  isApproved: {
+    type:Boolean,
+    default:false,
+  }
 });
 
 module.exports = mongoose.model('Usuario', UsuarioSchema);

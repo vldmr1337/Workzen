@@ -37,6 +37,10 @@ const EmpresaSchema = new mongoose.Schema({
   },
   localizacao: {
     type: String,
+  },
+  isApproved: {
+    type:Boolean,
+    default:false,
   }
 });
 
