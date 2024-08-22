@@ -30,14 +30,13 @@ exports.login = async (req, res) => {
 
 exports.register = async (req, res) => {
   try {
-    const { email, password, cnpj: cnpjValue, ramo_atividade, nome } = req.body;
+    const { email, password, cnpj: cnpjValue, ramo_atividade, nome, localizacao } = req.body;
 
-    if (!email || !password || !cnpjValue || !ramo_atividade || !nome) {
+    if (!email || !password || !cnpjValue || !ramo_atividade || !nome || !localizacao) {
       return res
         .status(400)
         .json({ message: "Todos os campos são obrigatórios." });
     }
-
     // Verifica se o CNPJ é válido
     if (!cnpj.isValid(cnpjValue)) {
       return res.status(400).json({ message: "CNPJ inválido." });
@@ -72,6 +71,7 @@ exports.register = async (req, res) => {
       cnpj: cnpjValue,
       ramo_atividade,
       nome,
+      localizacao,
     });
 
     // Salva a empresa no banco de dados
