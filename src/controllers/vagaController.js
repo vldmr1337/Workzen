@@ -11,7 +11,7 @@ exports.createJob = async (req, res) => {
       title,
       description,
       tags,
-      salario: salario + " R$",
+      salario,
       localizacao,
       requirements,
     });
@@ -49,10 +49,10 @@ exports.getJobDetails = async (req, res) => {
 
 exports.updateJob = async (req, res) => {
   try {
-    const { title, description, requirements, tags, localizacao} = req.body;
+    const { title, description, requirements, tags, localizacao, salario} = req.body;
     const job = await Job.findByIdAndUpdate(
       req.params.jobId,
-      { title, description, requirements, tags, localizacao },
+      { title, description, requirements, tags, localizacao, salario },
       { new: true, runValidators: true }
     );
 
