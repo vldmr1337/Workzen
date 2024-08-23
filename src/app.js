@@ -8,6 +8,7 @@ const jobRoute = require('./routes/vagasRoutes');
 const mailRoutes = require('./routes/mailRoutes');
 const authRotes = require('./routes/authRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const cors = require('cors');
 const passport = require('passport'); // Certifique-se de que o Passport está sendo importado
 require('./config/passport'); // Certifique-se de que a configuração do Passport é carregada
@@ -27,6 +28,7 @@ app.use('/v1/jobs', jobRoute);
 app.use('/v1/mail', mailRoutes);
 app.use('/v1/auth', authRotes);
 app.use('/v1/notify', notificationRoutes);
+app.use('/v1/admin', adminRoutes);
 
 
 app.get('/', (req, res) => {
