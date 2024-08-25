@@ -89,7 +89,7 @@ exports.getApplicants = async (req, res) => {
   try {
     const job = await Job.findById(req.params.jobId).populate(
       "applicants",
-      "firstName lastName email"
+      "firstName lastName email image bio titulo"
     );
     if (!job) {
       return res.status(404).json({ message: "Vaga não encontrada" });
