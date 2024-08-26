@@ -48,6 +48,9 @@ const UsuarioSchema = new mongoose.Schema({
   isApproved: {
     type:Boolean,
     default:false,
+  },
+  tags:{
+    type:[String],
   }
 });
 
