@@ -49,7 +49,7 @@ exports.getJobDetails = async (req, res) => {
 
 exports.updateJob = async (req, res) => {
   try {
-    const { title, description, requirements, tags, localizacao, salario} = req.body;
+    const { title, description, requirements, tags, localizacao, salario } = req.body;
     const job = await Job.findByIdAndUpdate(
       req.params.jobId,
       { title, description, requirements, tags, localizacao, salario },
@@ -91,13 +91,26 @@ exports.getApplicants = async (req, res) => {
       "applicants",
       "firstName lastName email image bio titulo"
     );
+    const applications = await Application.find({ job: req.params.jobId }).populate(
+      'user',
+      'firstName lastName email image bio titulo'
+    );
+
     if (!job) {
       return res.status(404).json({ message: "Vaga não encontrada" });
     }
+
     if (job.company.toString() !== req.user.id) {
       return res.status(403).json({ message: "Acesso negado" });
     }
-    res.status(200).json({ applicants: job.applicants });
+    const applicantsWithStatus = job.applicants.map(applicant => {
+      const application = applications.find(app => app.user._id.toString() === applicant._id.toString());
+      return {
+        ...applicant.toObject(),
+        applicationStatus: application ? application.status : 'Rejeitado'
+      };
+    });
+    res.status(200).json({ applicants: applicantsWithStatus });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Erro ao listar candidatos", error });
@@ -126,7 +139,6 @@ exports.applyToJob = async (req, res) => {
 
     await application.save();
 
-    // Add applicant to the job's applicants array
     job.applicants.push(userId);
     await job.save();
 
@@ -149,7 +161,7 @@ exports.searchJobsByTag = async (req, res) => {
 
 exports.acceptCandidate = async (req, res) => {
   try {
-    const { jobId, candidateId } = req.params; 
+    const { jobId, candidateId } = req.params;
 
     const job = await Job.findById(jobId);
     if (!job) {
@@ -167,12 +179,16 @@ exports.acceptCandidate = async (req, res) => {
       return res.status(404).json({ message: 'Inscrição não encontrada' });
     }
 
-    application.status = 'Aceitado'; 
+    application.status = 'Aceitado';
     await application.save();
 
     await Application.updateMany(
       { job: jobId, _id: { $ne: application._id } }, // Exclui a candidatura aceita
       { status: 'Rejeitado' }
+    );
+
+    await Job.updateMany(
+      { status: 'Closed' }
     );
 
     // Envia notificação para o candidato aceito

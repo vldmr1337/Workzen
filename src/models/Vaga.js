@@ -38,6 +38,11 @@ const VagaSchema = new mongoose.Schema({
   localizacao: {
     type: String,
     required: true
+  },
+  status: {
+    type: String,
+    enum:['Open', 'Closed'],
+    default: 'Open',
   }
 });
 
