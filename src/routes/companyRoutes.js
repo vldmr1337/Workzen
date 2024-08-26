@@ -5,6 +5,7 @@ const upload = require("../middlewares/multer");
 const auth = require("../middlewares/authenticate");
 
 router.get("/empresa/profile", auth, empresaController.getProfile);
+router.get("/empresa/id/:id", empresaController.getProfileByID);
 
 router.put(
   "/empresa/profile",

@@ -178,3 +178,17 @@ exports.deleteProfile = async (req, res) => {
     res.status(500).json({ message: "Erro ao excluir perfil", error });
   }
 };
+
+exports.getProfileByID = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const empresa = await Empresa.findById(id).select("-password -isApproved");
+    if (!empresa) {
+      return res.status(404).json({ message: 'Empresa não encontrada' });
+    }
+    res.status(200).json(empresa);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao buscar perfil da empresa', error });
+  }
+};
