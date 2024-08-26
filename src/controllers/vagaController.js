@@ -89,7 +89,7 @@ exports.getApplicants = async (req, res) => {
   try {
     const job = await Job.findById(req.params.jobId).populate(
       "applicants",
-      "firstName lastName email image bio titulo"
+      "firstName lastName email image bio titulo tags"
     );
     const applications = await Application.find({ job: req.params.jobId }).populate(
       'user',
