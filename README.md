@@ -77,6 +77,7 @@ Antes de instalar o projeto, certifique-se de ter os seguintes softwares instala
     CLOUDINARY_CLOUD_NAME=cloudinary_name
     CLOUDINARY_API_KEY=cloudinary_key
     CLOUDINARY_API_SECRET=cloudinary_secret
+    FRONT_END=your_front_end_url
    ```
 
 5. Inicie o servidor:
