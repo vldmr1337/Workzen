@@ -101,11 +101,11 @@ Após a instalação, você pode interagir com a API usando ferramentas como [Po
 - **Registro de Usuário**: `POST /v1/user/register`
 - **Login de Usuário**: `POST /v1/user/login`
 - **Perfil do Usuário**: `GET /v1/me`
-- **Upload de Currículo**: `POST /v1/mail/send/verify`
+- **Envio de emails de verificação**: `POST /v1/mail/send/verify`
 
 > **Nota:** Para endpoints protegidos, é necessário enviar um token JWT válido no cabeçalho da requisição.
 
-> **Aviso:** Você pode ler a documentação inteira, com todos os endpoints e métodos [aqui](https://asdfg2048.github.io/api-docs/).
+> **Aviso:** Você pode ver a documentação, com todos os endpoints e métodos [aqui](https://asdfg2048.github.io/api-docs/).
 
 ## Contribuição
 
