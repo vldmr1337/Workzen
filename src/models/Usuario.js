@@ -51,6 +51,12 @@ const UsuarioSchema = new mongoose.Schema({
   },
   tags:{
     type:[String],
+    validate: {
+      validator: function(array) {
+        return array.length <= 7; // Limit the array to a maximum of 5 elements
+      },
+      message: 'No máximo 7 tags.'
+    }
   }
 });
 
