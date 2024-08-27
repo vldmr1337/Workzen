@@ -36,7 +36,7 @@ exports.getCompanyJobs = async (req, res) => {
 
 exports.getJobDetails = async (req, res) => {
   try {
-    const job = await Job.findById(req.params.jobId).populate('applicants', 'firstName lastName email');
+    const job = await Job.findById(req.params.jobId).select('-applicants');
     if (!job) {
       return res.status(404).json({ message: 'Vaga não encontrada' });
     }
@@ -200,5 +200,29 @@ exports.acceptCandidate = async (req, res) => {
   } catch (error) {
     console.error('Erro ao aceitar candidato:', error);
     res.status(500).json({ message: 'Erro ao aceitar candidato', error });
+  }
+};
+exports.favoriteJobs = async (req, res) => {
+  try {
+    const { jobId } = req.body;
+    const userId = req.user.id;
+
+    const user = await Usuario.findByIdAndUpdate(
+      userId,
+      { $addToSet: { favoritedJobs: jobId } }, 
+      { new: true, runValidators: true }
+    ).populate('favoritedJobs', 'title description'); 
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    res.status(200).json({
+      message: 'Vaga favoritada com sucesso!',
+      favoritedJobs: user.favoritedJobs
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao favoritar a vaga', error });
   }
 };

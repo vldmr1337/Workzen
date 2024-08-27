@@ -13,6 +13,7 @@ router.post('/:jobId/accept/:candidateId', authMiddleware, authorize('empresa'),
 router.get('/:jobId/applicants', authMiddleware, authorize('empresa'), jobController.getApplicants);
 router.post('/:jobId/apply', authMiddleware, authorize('usuario'), jobController.applyToJob);
 router.get('/search', jobController.searchJobsByTag);
+router.put('/favorite', authMiddleware, authorize('usuario'), jobController.favoriteJobs);
 
 
 module.exports = router;
