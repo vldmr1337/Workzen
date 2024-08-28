@@ -6,11 +6,12 @@ const { createNotification } = require('./notificationController');
 exports.createJob = async (req, res) => {
   try {
     const { title, description, tags, salario, localizacao, requirements } = req.body;
+    const newTags = tags.map(element => element.toLowerCase());
     const job = new Job({
       company: req.user.id,
       title,
       description,
-      tags,
+      tags: newTags,
       salario,
       localizacao,
       requirements,
