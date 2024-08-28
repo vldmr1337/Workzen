@@ -14,6 +14,7 @@ router.get('/:jobId/applicants', authMiddleware, authorize('empresa'), jobContro
 router.post('/:jobId/apply', authMiddleware, authorize('usuario'), jobController.applyToJob);
 router.get('/search', jobController.searchJobsByTag);
 router.put('/favorite', authMiddleware, authorize('usuario'), jobController.favoriteJobs);
+router.get('/all', authMiddleware, jobController.getAllJobs);
 
 
 module.exports = router;

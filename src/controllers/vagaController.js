@@ -50,9 +50,10 @@ exports.getJobDetails = async (req, res) => {
 exports.updateJob = async (req, res) => {
   try {
     const { title, description, requirements, tags, localizacao, salario } = req.body;
+    const newTags = tags.map(element => element.toLowerCase());
     const job = await Job.findByIdAndUpdate(
       req.params.jobId,
-      { title, description, requirements, tags, localizacao, salario },
+      { title, description, requirements, tags: newTags, localizacao, salario },
       { new: true, runValidators: true }
     );
 
@@ -224,5 +225,33 @@ exports.favoriteJobs = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erro ao favoritar a vaga', error });
+  }
+};
+exports.getAllJobs = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    
+    // Set the limit to 10 items per page
+    const limit = 10;
+    
+    const skip = (page - 1) * limit;
+    
+    const jobs = await Job.find()
+                          .populate('company', 'nome ramo_atividade')
+                          .skip(skip)
+                          .limit(limit);
+    
+    const totalJobs = await Job.countDocuments();
+    const totalPages = Math.ceil(totalJobs / limit);
+    
+    res.status(200).json({
+      jobs,
+      currentPage: page,
+      totalPages,
+      totalJobs
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao buscar todas as vagas', error });
   }
 };
