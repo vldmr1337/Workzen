@@ -15,6 +15,7 @@ router.post('/:jobId/apply', authMiddleware, authorize('usuario'), jobController
 router.get('/search', jobController.searchJobsByTag);
 router.put('/favorite', authMiddleware, authorize('usuario'), jobController.favoriteJobs);
 router.get('/all', authMiddleware, jobController.getAllJobs);
+router.post('/unfavorite', authMiddleware, authorize('usuario'), jobController.unfavoriteJobs);
 
 
 module.exports = router;

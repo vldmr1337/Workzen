@@ -256,3 +256,27 @@ exports.getAllJobs = async (req, res) => {
     res.status(500).json({ message: 'Erro ao buscar todas as vagas', error });
   }
 };
+exports.unfavoriteJobs = async (req, res) => {
+  try {
+    const { jobId } = req.body;
+    const userId = req.user.id;
+
+    const user = await Usuario.findByIdAndUpdate(
+      userId,
+      { $pull: { favoritedJobs: jobId } }, 
+      { new: true, runValidators: true }
+    ).populate('favoritedJobs', 'title description'); 
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    res.status(200).json({
+      message: 'Vaga removida dos favoritos com sucesso!',
+      favoritedJobs: user.favoritedJobs
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao remover a vaga dos favoritos', error });
+  }
+};
