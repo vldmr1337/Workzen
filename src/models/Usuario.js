@@ -57,6 +57,9 @@ const UsuarioSchema = new mongoose.Schema({
       },
       message: 'No máximo 7 tags.'
     }
+  },
+  localizacao:{
+    type:String
   }
 });
 

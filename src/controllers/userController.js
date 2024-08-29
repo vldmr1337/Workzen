@@ -1,8 +1,9 @@
 const Usuario = require('../models/Usuario');
-const bcrypt = require('bcrypt');
-const cloudinary = require('../config/cloudinary');
 const Empresa = require('../models/Empresa');
 const Application = require('../models/Aplicacoes');
+const Job = require('../models/Vaga');
+const bcrypt = require('bcrypt');
+const cloudinary = require('../config/cloudinary');
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const { body, validationResult } = require('express-validator');
@@ -37,7 +38,11 @@ exports.deleteProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, titulo, bio, languages, favoritedJobs, tags } = req.body;
+    const { firstName, lastName, email, password, titulo, bio, languages, favoritedJobs, tags, localizacao } = req.body;
+    if(tags) {
+      const newTags = tags.map(item => item.toLowerCase());
+      tags = newTags;
+    };
     const user = await Usuario.findById(req.user.id);
 
     if (!user) {
@@ -80,7 +85,8 @@ exports.updateProfile = async (req, res) => {
       bio,
       languages,
       favoritedJobs,
-      tags
+      tags,
+      localizacao
     };
 
     if (user.googleId) {
@@ -245,4 +251,42 @@ exports.getUserApplications = async (req, res) => {
     res.status(500).json({ message: 'Erro ao buscar inscrições', error });
   }
 };
+exports.getRecommendedJobs = async (req, res) => {
+  try {
+    const user = await Usuario.findById(req.user.id).populate('favoritedJobs');
+    let recommendedJobs = [];
 
+    if (user.tags.length > 0 || user.localizacao.length > 0) {
+      recommendedJobs = await Job.find({
+        tags: { $in: user.tags },
+        localizacao: user.localizacao.length > 0 ? { $in: user.localizacao } : { $ne: null },
+        status: 'Open',
+        _id: { $nin: user.favoritedJobs }
+      }).populate('company', 'nome ramo_atividade');
+    }
+    if (user.titulo) {
+      const titleMatchedJobs = await Job.find({
+        title: { $regex: new RegExp(user.titulo, 'i') },
+        status: 'Open', 
+        _id: { $nin: user.favoritedJobs }
+      }).populate('company', 'nome ramo_atividade');
+      recommendedJobs = [...recommendedJobs, ...titleMatchedJobs];
+    }
+    
+    if (recommendedJobs.length === 0) {
+      recommendedJobs = await Job.find({
+        status: 'Open',
+        localizacao: user.localizacao.length > 0 ? { $in: user.localizacao } : { $ne: null }
+      })
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .populate('company', 'nome ramo_atividade');
+    }
+    recommendedJobs = Array.from(new Set(recommendedJobs.map(job => job._id.toString())))
+    .map(id => recommendedJobs.find(job => job._id.toString() === id));
+    res.status(200).json(recommendedJobs);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao obter vagas recomendadas', error });
+  }
+};
