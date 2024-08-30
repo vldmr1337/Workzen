@@ -197,37 +197,37 @@ exports.acceptCandidate = async (req, res) => {
     const candidate = await Usuario.findById(candidateId);
     const message = `Parabéns! Você foi aceito para a vaga ${job.title}.`;
     await createNotification(candidate._id, message);
-
+    exports.favoriteJobs = async (req, res) => {
+      try {
+        const { jobId } = req.body;
+        const userId = req.user.id;
+    
+        const user = await Usuario.findByIdAndUpdate(
+          userId,
+          { $addToSet: { favoritedJobs: jobId } }, 
+          { new: true, runValidators: true }
+        ).populate('favoritedJobs', 'title description'); 
+    
+        if (!user) {
+          return res.status(404).json({ message: 'Usuário não encontrado' });
+        }
+    
+        res.status(200).json({
+          message: 'Vaga favoritada com sucesso!',
+          favoritedJobs: user.favoritedJobs
+        });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao favoritar a vaga', error });
+      }
+    };
     res.status(200).json({ message: 'Candidato aceito com sucesso', application });
   } catch (error) {
     console.error('Erro ao aceitar candidato:', error);
     res.status(500).json({ message: 'Erro ao aceitar candidato', error });
   }
 };
-exports.favoriteJobs = async (req, res) => {
-  try {
-    const { jobId } = req.body;
-    const userId = req.user.id;
 
-    const user = await Usuario.findByIdAndUpdate(
-      userId,
-      { $addToSet: { favoritedJobs: jobId } }, 
-      { new: true, runValidators: true }
-    ).populate('favoritedJobs', 'title description'); 
-
-    if (!user) {
-      return res.status(404).json({ message: 'Usuário não encontrado' });
-    }
-
-    res.status(200).json({
-      message: 'Vaga favoritada com sucesso!',
-      favoritedJobs: user.favoritedJobs
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Erro ao favoritar a vaga', error });
-  }
-};
 exports.getAllJobs = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -258,18 +258,21 @@ exports.getAllJobs = async (req, res) => {
 };
 exports.unfavoriteJobs = async (req, res) => {
   try {
-    const { jobId } = req.body;
+    const { id: jobId } = req.params; 
     const userId = req.user.id;
 
-    const user = await Usuario.findByIdAndUpdate(
-      userId,
-      { $pull: { favoritedJobs: jobId } }, 
-      { new: true, runValidators: true }
-    ).populate('favoritedJobs', 'title description'); 
-
+    const user = await Usuario.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'Usuário não encontrado' });
     }
+
+    const jobIndex = user.favoritedJobs.indexOf(jobId);
+    if (jobIndex === -1) {
+      return res.status(404).json({ message: 'Vaga não encontrada nos favoritos do usuário' });
+    }
+
+    user.favoritedJobs.splice(jobIndex, 1);
+    await user.save();
 
     res.status(200).json({
       message: 'Vaga removida dos favoritos com sucesso!',
@@ -278,5 +281,30 @@ exports.unfavoriteJobs = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erro ao remover a vaga dos favoritos', error });
+  }
+};
+
+exports.favoriteJobs = async (req, res) => {
+  try {
+    const { jobId } = req.body;
+    const userId = req.user.id;
+
+    const user = await Usuario.findByIdAndUpdate(
+      userId,
+      { $addToSet: { favoritedJobs: jobId } }, 
+      { new: true, runValidators: true }
+    ).populate('favoritedJobs', 'title description'); 
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    res.status(200).json({
+      message: 'Vaga favoritada com sucesso!',
+      favoritedJobs: user.favoritedJobs
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao favoritar a vaga', error });
   }
 };
