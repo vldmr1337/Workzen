@@ -308,3 +308,23 @@ exports.favoriteJobs = async (req, res) => {
     res.status(500).json({ message: 'Erro ao favoritar a vaga', error });
   }
 };
+exports.getFavorited = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await Usuario.findById(userId).populate('favoritedJobs', 'title description');
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+    if (!user.favoritedJobs || user.favoritedJobs.length === 0) {
+      return res.status(200).json({ message: 'Nenhuma vaga favoritada encontrada.', favoritedJobs: [] });
+    }
+    res.status(200).json({
+      message: 'Vagas favoritada recuperadas com sucesso!',
+      favoritedJobs: user.favoritedJobs
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao recuperar as vagas favoritada', error });
+  }
+};

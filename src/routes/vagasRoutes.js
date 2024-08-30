@@ -16,6 +16,7 @@ router.get('/search', jobController.searchJobsByTag);
 router.put('/favorite', authMiddleware, authorize('usuario'), jobController.favoriteJobs);
 router.get('/all', authMiddleware, jobController.getAllJobs);
 router.delete('/favorite/:id', authMiddleware, authorize('usuario'), jobController.unfavoriteJobs);
+router.get('/favorite', authMiddleware, authorize('usuario'), jobController.getFavorited);
 
 
 module.exports = router;

@@ -256,10 +256,10 @@ exports.getRecommendedJobs = async (req, res) => {
     const user = await Usuario.findById(req.user.id).populate('favoritedJobs');
     let recommendedJobs = [];
 
-    if (user.tags.length > 0 || user.localizacao.length > 0) {
+    if (user.tags.length > 0 || user.localizacao) {
       recommendedJobs = await Job.find({
         tags: { $in: user.tags },
-        localizacao: user.localizacao.length > 0 ? { $in: user.localizacao } : { $ne: null },
+        localizacao: user.localizacao ? { $in: user.localizacao } : { $ne: null },
         status: 'Open',
         _id: { $nin: user.favoritedJobs }
       }).populate('company', 'nome ramo_atividade');
