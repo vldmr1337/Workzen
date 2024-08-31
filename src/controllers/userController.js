@@ -262,14 +262,14 @@ exports.getRecommendedJobs = async (req, res) => {
         localizacao: user.localizacao ? { $in: user.localizacao } : { $ne: null },
         status: 'Open',
         _id: { $nin: user.favoritedJobs }
-      }).populate('company', 'nome ramo_atividade');
+      }).populate('company', 'nome ramo_atividade image');
     }
     if (user.titulo) {
       const titleMatchedJobs = await Job.find({
         title: { $regex: new RegExp(user.titulo, 'i') },
         status: 'Open', 
         _id: { $nin: user.favoritedJobs }
-      }).populate('company', 'nome ramo_atividade');
+      }).populate('company', 'nome ramo_atividade image');
       recommendedJobs = [...recommendedJobs, ...titleMatchedJobs];
     }
     
@@ -280,7 +280,7 @@ exports.getRecommendedJobs = async (req, res) => {
       })
         .sort({ createdAt: -1 })
         .limit(10)
-        .populate('company', 'nome ramo_atividade');
+        .populate('company', 'nome ramo_atividade image');
     }
     recommendedJobs = Array.from(new Set(recommendedJobs.map(job => job._id.toString())))
     .map(id => recommendedJobs.find(job => job._id.toString() === id));

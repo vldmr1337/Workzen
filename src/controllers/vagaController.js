@@ -153,7 +153,7 @@ exports.applyToJob = async (req, res) => {
 exports.searchJobsByTag = async (req, res) => {
   try {
     const { tag } = req.query;
-    const jobs = await Job.find({ tags: tag }).populate('company', 'nome ramo_atividade');
+    const jobs = await Job.find({ tags: tag }).populate('company', 'nome ramo_atividade image');
     res.status(200).json(jobs);
   } catch (error) {
     console.error(error);
@@ -238,7 +238,7 @@ exports.getAllJobs = async (req, res) => {
     const skip = (page - 1) * limit;
     
     const jobs = await Job.find()
-                          .populate('company', 'nome ramo_atividade')
+                          .populate('company', 'nome ramo_atividade image',)
                           .skip(skip)
                           .limit(limit);
     
