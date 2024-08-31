@@ -50,7 +50,7 @@ exports.sendPasswordRecoveryEmail = async (req, res) => {
       expiresIn: "1h",
     });
 
-    const recoveryLink = `http://tcc-react-three.vercel.app/recuperar-senha/${token}`;
+    const recoveryLink = `${process.env.FRONT_END}/recuperar-senha/${token}`;
 
     await transporter.sendMail({
       from: `Workzen <${process.env.EMAIL}>`,
