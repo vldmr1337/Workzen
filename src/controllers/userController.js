@@ -39,20 +39,17 @@ exports.deleteProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const { firstName, lastName, email, password, titulo, bio, languages, favoritedJobs, tags, localizacao } = req.body;
-    if(tags) {
-      const newTags = tags.map(item => item.toLowerCase());
-      tags = newTags;
-    };
+
+    const newTags = tags ? tags.map(item => item.toLowerCase()) : undefined;
     const user = await Usuario.findById(req.user.id);
 
     if (!user) {
       return res.status(404).json({ message: 'Usuário não encontrado' });
     }
 
-    let imageUrl = user.image || ''; // Usa a imagem existente ou uma string vazia
+    let imageUrl = user.image || '';
 
     if (req.file) {
-      // Faz upload da imagem para o Cloudinary
       try {
         imageUrl = await new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
@@ -85,7 +82,7 @@ exports.updateProfile = async (req, res) => {
       bio,
       languages,
       favoritedJobs,
-      tags,
+      tags: newTags !== undefined ? newTags : user.tags,
       localizacao
     };
 
