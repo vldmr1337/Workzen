@@ -233,9 +233,9 @@ exports.getUserApplications = async (req, res) => {
         path: 'job',
         populate: {
           path: 'company',
-          select: 'nome ramo_atividade'
+          select: 'nome ramo_atividade image'
         },
-        select: 'title description' 
+        select: 'title description tags salario localizacao status' 
       });
 
     if (!applications.length) {
