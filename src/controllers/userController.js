@@ -250,37 +250,43 @@ exports.getUserApplications = async (req, res) => {
 };
 exports.getRecommendedJobs = async (req, res) => {
   try {
-    const user = await Usuario.findById(req.user.id).populate('favoritedJobs');
+    const user = await Usuario.findById(req.user.id);
     let recommendedJobs = [];
 
-    if (user.tags.length > 0 || user.localizacao) {
+    const userTags = user.tags || [];
+    const userLocation = user.localizacao || '';
+
+    if (userTags.length > 0 || userLocation) {
       recommendedJobs = await Job.find({
-        tags: { $in: user.tags },
-        localizacao: user.localizacao ? { $in: user.localizacao } : { $ne: null },
+        tags: { $in: userTags },
         status: 'Open',
-        _id: { $nin: user.favoritedJobs }
+        _id: { $nin: user.favoritedJobs.map(job => job._id) } 
       }).populate('company', 'nome ramo_atividade image');
     }
+
     if (user.titulo) {
       const titleMatchedJobs = await Job.find({
         title: { $regex: new RegExp(user.titulo, 'i') },
-        status: 'Open', 
-        _id: { $nin: user.favoritedJobs }
+        status: 'Open',
+        _id: { $nin: user.favoritedJobs.map(job => job._id) } 
       }).populate('company', 'nome ramo_atividade image');
       recommendedJobs = [...recommendedJobs, ...titleMatchedJobs];
     }
-    
+
+    recommendedJobs = recommendedJobs.filter((job, index, self) =>
+      index === self.findIndex((j) => j._id.toString() === job._id.toString())
+    );
+
     if (recommendedJobs.length === 0) {
       recommendedJobs = await Job.find({
         status: 'Open',
-        localizacao: user.localizacao.length > 0 ? { $in: user.localizacao } : { $ne: null }
+        localizacao: userLocation ? userLocation : { $ne: null }
       })
         .sort({ createdAt: -1 })
         .limit(10)
         .populate('company', 'nome ramo_atividade image');
     }
-    recommendedJobs = Array.from(new Set(recommendedJobs.map(job => job._id.toString())))
-    .map(id => recommendedJobs.find(job => job._id.toString() === id));
+
     res.status(200).json(recommendedJobs);
   } catch (error) {
     console.error(error);
