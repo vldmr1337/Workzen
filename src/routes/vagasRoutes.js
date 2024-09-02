@@ -12,7 +12,7 @@ router.delete('/delete/:jobId', authMiddleware, authorize('empresa'), jobControl
 router.post('/:jobId/accept/:candidateId', authMiddleware, authorize('empresa'), jobController.acceptCandidate);
 router.get('/:jobId/applicants', authMiddleware, authorize('empresa'), jobController.getApplicants);
 router.post('/:jobId/apply', authMiddleware, authorize('usuario'), jobController.applyToJob);
-router.get('/search', jobController.searchJobsByTag);
+router.get('/search', jobController.searchJobs);
 router.put('/favorite', authMiddleware, authorize('usuario'), jobController.favoriteJobs);
 router.get('/all', authMiddleware, jobController.getAllJobs);
 router.delete('/favorite/:id', authMiddleware, authorize('usuario'), jobController.unfavoriteJobs);

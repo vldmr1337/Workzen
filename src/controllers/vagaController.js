@@ -150,14 +150,24 @@ exports.applyToJob = async (req, res) => {
     res.status(500).json({ message: 'Erro ao se inscrever na vaga', error });
   }
 };
-exports.searchJobsByTag = async (req, res) => {
+exports.searchJobs = async (req, res) => {
   try {
-    const { tag } = req.query;
-    const jobs = await Job.find({ tags: tag }).populate('company', 'nome ramo_atividade image');
+    const { query } = req.query;
+    const searchQuery = new RegExp(query, 'i'); // 'i' for case-insensitive search
+    
+    const jobs = await Job.find({
+      $or: [
+        { title: searchQuery },
+        { tags: { $in: [searchQuery] } },
+        { localizacao: searchQuery }
+      ],
+      status: 'Open'
+    }).populate('company', 'nome ramo_atividade image');
+    
     res.status(200).json(jobs);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Erro ao buscar vagas por tag', error });
+    res.status(500).json({ message: 'Erro ao buscar vagas', error });
   }
 };
 
