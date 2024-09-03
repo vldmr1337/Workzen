@@ -6,18 +6,17 @@ const registerRoute = require('./routes/registerRoute');
 const protectedRoutes = require('./routes/userRoutes');
 const jobRoute = require('./routes/vagasRoutes');
 const mailRoutes = require('./routes/mailRoutes');
-const authRotes = require('./routes/authRoutes');
+const authRoutes = require('./routes/authRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const cors = require('cors');
 const companyRoutes = require('./routes/companyRoutes');
-const passport = require('passport'); // Certifique-se de que o Passport está sendo importado
-require('./config/passport'); // Certifique-se de que a configuração do Passport é carregada
+const passport = require('passport'); 
+require('./config/passport'); 
 
 
 require('dotenv').config();
 app.use(cors());
-
 connectDB();
 app.use(passport.initialize());
 app.use(express.json());
@@ -28,13 +27,17 @@ app.use('/v1/', companyRoutes);
 app.use('/v1/', protectedRoutes);
 app.use('/v1/jobs', jobRoute);
 app.use('/v1/mail', mailRoutes);
-app.use('/v1/auth', authRotes);
+app.use('/v1/auth', authRoutes);
 app.use('/v1/notify', notificationRoutes);
 app.use('/v1/admin', adminRoutes);
 
-
 app.get('/', (req, res) => {
-  res.json({ message: 'API online' });
+  res.json({
+    message: 'API online',
+    version: '1.0.0', // Substitua pela versão correta da sua API
+    environment: 'test',
+    uptime: process.uptime(), // Tempo de atividade do servidor em segundos
+  });
 });
 
 app.use((req, res, next) => {
