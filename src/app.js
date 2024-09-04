@@ -34,9 +34,9 @@ app.use('/v1/admin', adminRoutes);
 app.get('/', (req, res) => {
   res.json({
     message: 'API online',
-    version: '1.0.0', // Substitua pela versão correta da sua API
+    version: '1.0.0', 
     environment: 'test',
-    uptime: process.uptime(), // Tempo de atividade do servidor em segundos
+    uptime: process.uptime(),
   });
 });
 

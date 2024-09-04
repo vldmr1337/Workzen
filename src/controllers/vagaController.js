@@ -321,8 +321,16 @@ exports.favoriteJobs = async (req, res) => {
 exports.getFavorited = async (req, res) => {
   try {
     const userId = req.user.id;
-    const user = await Usuario.findById(userId).populate('favoritedJobs', 'title description');
-
+    const user = await Usuario.findById(userId)
+    .populate({
+      path: 'favoritedJobs',
+      select: 'title description salario',
+      populate: {
+        path: 'company',
+        select: 'nome image',
+      }
+    });
+  
     if (!user) {
       return res.status(404).json({ message: 'Usuário não encontrado' });
     }
