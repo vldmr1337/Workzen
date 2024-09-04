@@ -324,7 +324,7 @@ exports.getFavorited = async (req, res) => {
     const user = await Usuario.findById(userId)
     .populate({
       path: 'favoritedJobs',
-      select: 'title description salario',
+      select: 'title description salario tags localizacao',
       populate: {
         path: 'company',
         select: 'nome image',
