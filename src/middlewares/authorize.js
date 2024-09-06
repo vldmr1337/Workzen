@@ -1,7 +1,9 @@
 const authorize = (requiredRole) => {
   return (req, res, next) => {
-    const { userType, isAdmin } = req.user;
-
+    const { userType, isAdmin, isApproved } = req.user;
+//    if(!isApproved){
+//     return res.status(403).json({message: "Acesso negado"})
+// }
     if (requiredRole === 'admin' && !isAdmin) {
       return res.status(403).json({ message: "Acesso negado" });
     }

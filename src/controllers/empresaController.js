@@ -18,7 +18,7 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: "Credenciais inválidas." });
     }
-    const token = jwt.sign({ id: empresa._id, userType: "empresa" }, secret, {
+    const token = jwt.sign({ id: empresa._id, userType: "empresa", isApproved: empresa.isApproved }, secret, {
       expiresIn: "1h",
     });
     res.status(200).json({ token });
@@ -78,7 +78,7 @@ exports.register = async (req, res) => {
     await empresa.save();
 
     // Gera o token JWT
-    const token = jwt.sign({ id: empresa._id, userType: "empresa" }, secret, {
+    const token = jwt.sign({ id: empresa._id, userType: "empresa", isApproved: empresa.isApproved }, secret, {
       expiresIn: "1h",
     });
 

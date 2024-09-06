@@ -182,7 +182,7 @@ exports.register = [
       });
 
       await usuario.save();
-      const token = jwt.sign({ id: usuario._id, userType: 'usuario' }, secret, { expiresIn: '1h' });
+      const token = jwt.sign({ id: usuario._id, userType: 'usuario', isApproved: user.isApproved }, secret, { expiresIn: '1h' });
 
       res.status(201).json({ usuario, token });
     } catch (error) {
@@ -206,7 +206,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Credenciais inválidas" });
     }
 
-    const token = jwt.sign({ id: user._id, userType: 'usuario' }, secret, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user._id, userType: 'usuario', isApproved: user.isApproved }, secret, { expiresIn: "1h" });
     res.status(200).json({ token });
   } catch (error) {
     console.error(error);

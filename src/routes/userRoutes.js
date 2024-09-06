@@ -14,7 +14,7 @@ router.put('/me/xp', authenticate, xpController.updateExperience);
 router.delete('/me/xp', authenticate, xpController.deleteExperience);
 router.get('/me/xp', authenticate, xpController.getExperiences);
 router.get('/me/applications', authenticate, userController.getUserApplications);
-router.get('/get/users/all', authenticate, authorize('empresa'), userController.getAll);
+// router.get('/get/users/all', authenticate, authorize('empresa'), userController.getAll);
 router.get('/me/recommended', authenticate, userController.getRecommendedJobs );
 
 
