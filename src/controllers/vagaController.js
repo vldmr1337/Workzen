@@ -152,9 +152,19 @@ exports.applyToJob = async (req, res) => {
 };
 exports.searchJobs = async (req, res) => {
   try {
-    const { query } = req.query;
-    const searchQuery = new RegExp(query, 'i'); // 'i' for case-insensitive search
+    const { query, page = 1 } = req.query;
+    const searchQuery = new RegExp(query, 'i'); // 'i' para pesquisa sem distinção de maiúsculas e minúsculas
+
+    const pageNumber = parseInt(page, 10);
+
+    if (pageNumber < 1) {
+      return res.status(400).json({ message: 'O número da página deve ser um inteiro positivo' });
+    }
+
+    const pageSize = 10;
     
+    const skip = (pageNumber - 1) * pageSize;
+
     const jobs = await Job.find({
       $or: [
         { title: searchQuery },
@@ -162,9 +172,29 @@ exports.searchJobs = async (req, res) => {
         { localizacao: searchQuery }
       ],
       status: 'Open'
-    }).populate('company', 'nome ramo_atividade image');
+    })
+    .skip(skip)
+    .limit(pageSize)
+    .populate('company', 'nome ramo_atividade image');
     
-    res.status(200).json(jobs);
+    const totalJobs = await Job.countDocuments({
+      $or: [
+        { title: searchQuery },
+        { tags: { $in: [searchQuery] } },
+        { localizacao: searchQuery }
+      ],
+      status: 'Open'
+    });
+
+    res.status(200).json({
+      jobs,
+      pagination: {
+        page: pageNumber,
+        limit: pageSize,
+        totalJobs,
+        totalPages: Math.ceil(totalJobs / pageSize)
+      }
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erro ao buscar vagas', error });
