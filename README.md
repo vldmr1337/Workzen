@@ -1,4 +1,3 @@
-# Workzen API
 
 ## Tabela de Conteúdos
 
