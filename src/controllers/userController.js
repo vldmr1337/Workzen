@@ -276,17 +276,6 @@ exports.getRecommendedJobs = async (req, res) => {
     recommendedJobs = recommendedJobs.filter((job, index, self) =>
       index === self.findIndex((j) => j._id.toString() === job._id.toString())
     );
-
-    if (recommendedJobs.length === 0) {
-      recommendedJobs = await Job.find({
-        status: 'Open',
-        localizacao: userLocation ? userLocation : { $ne: null }
-      })
-        .sort({ createdAt: -1 })
-        .limit(10)
-        .populate('company', 'nome ramo_atividade image');
-    }
-
     res.status(200).json(recommendedJobs);
   } catch (error) {
     console.error(error);
