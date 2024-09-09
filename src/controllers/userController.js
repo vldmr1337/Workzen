@@ -182,7 +182,7 @@ exports.register = [
       });
 
       await usuario.save();
-      const token = jwt.sign({ id: usuario._id, userType: 'usuario', isApproved: user.isApproved }, secret, { expiresIn: '1h' });
+      const token = jwt.sign({ id: usuario._id, userType: 'usuario', isApproved: usuario.isApproved }, secret, { expiresIn: '1h' });
 
       res.status(201).json({ usuario, token });
     } catch (error) {
