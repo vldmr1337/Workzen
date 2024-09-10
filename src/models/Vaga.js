@@ -50,4 +50,13 @@ function arrayLimit(val) {
   return val.length > 0;
 }
 
+VagaSchema.pre('remove', async function(next) {
+  try {
+    // Remover todas as aplicações associadas a esta vaga
+    await mongoose.model('Application').deleteMany({ job: this._id });
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 module.exports = mongoose.model('Job', VagaSchema);

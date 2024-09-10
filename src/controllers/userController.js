@@ -237,7 +237,7 @@ exports.getUserApplications = async (req, res) => {
         },
         select: 'title description tags salario localizacao status' 
       });
-
+  
     if (!applications.length) {
       return res.status(404).json({ message: 'Nenhuma inscrição encontrada' });
     }
