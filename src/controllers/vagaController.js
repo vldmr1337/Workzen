@@ -229,7 +229,8 @@ exports.acceptCandidate = async (req, res) => {
       { status: 'Rejeitado' }
     );
 
-    await Job.updateMany(
+    await Job.findByIdAndUpdate(
+      jobId,
       { status: 'Closed' }
     );
 
