@@ -80,6 +80,7 @@ exports.deleteJob = async (req, res) => {
     if (job.company.toString() !== req.user.id) {
       return res.status(403).json({ message: "Acesso negado" });
     }
+    await job.remove();
     res.status(200).json({ message: "Vaga deletada com sucesso" });
   } catch (error) {
     console.error(error);
