@@ -50,13 +50,19 @@ function arrayLimit(val) {
   return val.length > 0;
 }
 
-VagaSchema.pre('remove', async function(next) {
+VagaSchema.pre('findOneAndDelete', async function(next) {
   try {
-    // Remover todas as aplicações associadas a esta vaga
-    await mongoose.model('Application').deleteMany({ job: this._id });
+    const job = await this.model.findOne(this.getQuery()); // Pega o documento antes de deletar
+
+    if (job) {
+      // Remove todas as aplicações associadas à vaga
+      await mongoose.model('Application').deleteMany({ job: job._id });
+    }
+
     next();
   } catch (error) {
     next(error);
   }
 });
+
 module.exports = mongoose.model('Job', VagaSchema);
