@@ -1,10 +1,11 @@
 const Notificacao = require('../models/Notificacoes');
 
-exports.createNotification = async (userId, message) => {
+exports.createNotification = async (userId, message, jobId) => {
   try {
     const notification = new Notificacao({
       user: userId,
       message,
+      job: jobId
     });
 
     await notification.save();
@@ -17,7 +18,16 @@ exports.createNotification = async (userId, message) => {
 
 exports.getNotifications = async (req, res) => {
   try {
-    const notifications = await Notificacao.find({ user: req.user.id }).sort({ createdAt: -1 });
+    const notifications = await Notificacao.find({ user: req.user.id })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: 'job',
+        select: 'title description ',
+        populate: {
+          path: 'company',
+          select: 'titulo ramo_atividade image' 
+        }
+      });
     res.status(200).json(notifications);
   } catch (error) {
     console.error('Erro ao buscar notificações:', error);

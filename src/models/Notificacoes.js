@@ -24,6 +24,11 @@ const notificationSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  job: {
+    type:mongoose.Schema.Types.ObjectId,
+    ref: 'Job',
+    required: true
+  }
 });
 
 module.exports = mongoose.model('Notification', notificationSchema);

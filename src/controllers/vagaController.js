@@ -237,35 +237,38 @@ exports.acceptCandidate = async (req, res) => {
     // Envia notificação para o candidato aceito
     const candidate = await Usuario.findById(candidateId);
     const message = `Parabéns! Você foi aceito para a vaga ${job.title}.`;
-    await createNotification(candidate._id, message);
-    exports.favoriteJobs = async (req, res) => {
-      try {
-        const { jobId } = req.body;
-        const userId = req.user.id;
-    
-        const user = await Usuario.findByIdAndUpdate(
-          userId,
-          { $addToSet: { favoritedJobs: jobId } }, 
-          { new: true, runValidators: true }
-        ).populate('favoritedJobs', 'title description'); 
-    
-        if (!user) {
-          return res.status(404).json({ message: 'Usuário não encontrado' });
-        }
-    
-        res.status(200).json({
-          message: 'Vaga favoritada com sucesso!',
-          favoritedJobs: user.favoritedJobs
-        });
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Erro ao favoritar a vaga', error });
-      }
-    };
+    await createNotification(candidate._id, message, jobId);
+
     res.status(200).json({ message: 'Candidato aceito com sucesso', application });
   } catch (error) {
     console.error('Erro ao aceitar candidato:', error);
     res.status(500).json({ message: 'Erro ao aceitar candidato', error });
+  }
+};
+
+    
+exports.favoriteJobs = async (req, res) => {
+  try {
+    const { jobId } = req.body;
+    const userId = req.user.id;
+
+    const user = await Usuario.findByIdAndUpdate(
+      userId,
+      { $addToSet: { favoritedJobs: jobId } }, 
+      { new: true, runValidators: true }
+    ).populate('favoritedJobs', 'title description'); 
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    res.status(200).json({
+      message: 'Vaga favoritada com sucesso!',
+      favoritedJobs: user.favoritedJobs
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao favoritar a vaga', error });
   }
 };
 
