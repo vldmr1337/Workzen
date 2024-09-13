@@ -256,26 +256,40 @@ exports.getRecommendedJobs = async (req, res) => {
     const userTags = user.tags || [];
     const userLocation = user.localizacao || '';
 
+    // Busca baseada nas tags do usuário
     if (userTags.length > 0 || userLocation) {
-      recommendedJobs = await Job.find({
+      const tagMatchedJobs = await Job.find({
         tags: { $in: userTags },
         status: 'Open',
-        _id: { $nin: user.favoritedJobs.map(job => job._id) } 
+        _id: { $nin: user.favoritedJobs.map(job => job._id) }
       }).populate('company', 'nome ramo_atividade image');
+      
+      recommendedJobs = [...recommendedJobs, ...tagMatchedJobs];
     }
 
+    // Busca baseada no título do usuário, com correspondência parcial
     if (user.titulo) {
+      // Quebrar o título do usuário em palavras
+      const titleKeywords = user.titulo.split(' ').filter(Boolean); // Divide em palavras e remove strings vazias
+
+      // Criar uma condição de busca com $or para cada palavra no título
       const titleMatchedJobs = await Job.find({
-        title: { $regex: new RegExp(user.titulo, 'i') },
+        $or: titleKeywords.map(keyword => ({
+          title: { $regex: new RegExp(keyword, 'i') } // Busca com regex para cada palavra
+        })),
         status: 'Open',
-        _id: { $nin: user.favoritedJobs.map(job => job._id) } 
+        _id: { $nin: user.favoritedJobs.map(job => job._id) }
       }).populate('company', 'nome ramo_atividade image');
+
       recommendedJobs = [...recommendedJobs, ...titleMatchedJobs];
     }
 
-    recommendedJobs = recommendedJobs.filter((job, index, self) =>
-      index === self.findIndex((j) => j._id.toString() === job._id.toString())
+    // Remover duplicatas baseado no _id
+    recommendedJobs = recommendedJobs.filter(
+      (job, index, self) => index === self.findIndex(j => j._id.toString() === job._id.toString())
     );
+
+    // Retornar as vagas recomendadas
     res.status(200).json(recommendedJobs);
   } catch (error) {
     console.error(error);
