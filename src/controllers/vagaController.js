@@ -204,10 +204,11 @@ exports.searchJobs = async (req, res) => {
 exports.acceptCandidate = async (req, res) => {
   try {
     const { jobId, candidateId } = req.params;
+    
+    const job = await Job.findById(jobId);
     if (job.status === 'Closed') {
       return res.status(400).json({ message: "Vaga já fechada." });
     }
-    const job = await Job.findById(jobId);
     if (!job) {
       return res.status(404).json({ message: 'Vaga não encontrada' });
     }
