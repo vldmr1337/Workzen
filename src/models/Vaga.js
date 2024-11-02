@@ -42,7 +42,12 @@ const VagaSchema = new mongoose.Schema({
   status: {
     type: String,
     enum:['Open', 'Closed'],
-    default: 'Open',
+    default:'Open',
+  },
+  step: {
+    type: Number,
+    required: true,
+    default: 1
   }
 });
 
@@ -52,10 +57,9 @@ function arrayLimit(val) {
 
 VagaSchema.pre('findOneAndDelete', async function(next) {
   try {
-    const job = await this.model.findOne(this.getQuery()); // Pega o documento antes de deletar
+    const job = await this.model.findOne(this.getQuery()); 
 
     if (job) {
-      // Remove todas as aplicações associadas à vaga
       await mongoose.model('Application').deleteMany({ job: job._id });
     }
 
