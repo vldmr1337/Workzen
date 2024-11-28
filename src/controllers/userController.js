@@ -235,7 +235,7 @@ exports.getUserApplications = async (req, res) => {
           path: 'company',
           select: 'nome ramo_atividade image'
         },
-        select: 'title description tags salario localizacao status' 
+        select: 'title description tags salario localizacao status requirements' 
       });
   
     if (!applications.length) {
